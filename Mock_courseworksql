@@ -1,0 +1,111 @@
+
+
+CREATE TYPE AirlineType AS OBJECT(
+Aircode VARCHAR(25),
+Name VARCHAR(25),
+Address VARCHAR(25));
+
+CREATE TABLE Airline OF AirlineType(
+Aircode PRIMARY KEY);
+
+CREATE TYPE FlightsType AS OBJECT(
+Flightcode VARCHAR(25),
+Arrtime VARCHAR(25),
+Origin VARCHAR(25),
+Stops VARCHAR(25),
+DepTime VARCHAR(25),
+Air_flight REF AirlineType);
+
+CREATE TABLE Flights OF FlightsType(
+Flightcode PRIMARY KEY,
+SCOPE FOR (Air_flight) IS Airline);
+
+CREATE TYPE Mile_programType AS OBJECT(
+Mile_code VARCHAR(25),
+Description VARCHAR(25),
+Startdate VARCHAR(25),
+Mile_pass REF PassengersType);
+
+CREATE TABLE Mile_program OF Mile_programType(
+Mile_code PRIMARY KEY,
+SCOPE FOR (Mile_pass) IS Passengers);
+
+CREATE TABLE Mile_air OF Mile_airType(
+SCOPE FOR (Air_program) IS Mile_program,
+SCOPE FOR (Mile_line) IS Airline);
+
+CREATE TYPE Mile_airType AS OBJECT(
+Air_program REF Mile_programType,
+Mile_line REF AirlineType);
+
+CREATE TYPE PassengersType AS OBJECT(
+Pass_code VARCHAR(25),
+Address VARCHAR(25),
+Name VARCHAR(25),
+Sex VARCHAR(25),
+Age NUMBER);
+
+CREATE TABLE Passengers OF PassengersType(
+Pass_code PRIMARY KEY);
+
+CREATE TYPE Mile_orderType AS OBJECT(
+Quantity VARCHAR(25),
+Order_code VARCHAR(25),
+ODate DATE);
+
+CREATE TABLE Mile_order OF Mile_orderType(
+Order_code PRIMARY KEY);
+
+CREATE TYPE MenuType AS OBJECT(
+Menucode VARCHAR(25),
+Description VARCHAR(25)) NOT FINAL;
+
+CREATE TABLE Menu OF MenuType(
+Menucode PRIMARY KEY);
+
+CREATE TYPE VegetarianType UNDER Menutype(
+ProteinLevel VARCHAR(25));
+
+CREATE TYPE KosherType UNDER MenuType(
+KosherOrganization VARCHAR(25));
+
+CREATE TYPE Low_fatType UNDER MenuType(
+Kcal VARCHAR(25));
+
+CREATE TABLE Vegetarian OF VegetarianType;
+CREATE TABLE Kosher OF KosherType;
+CREATE TABLE Low_fat OF Low_fatType;
+
+CREATE TYPE HaveType AS OBJECT(
+flight_have REF Flights_Type,
+pass_have REF PassengersType,
+mile_have REF Mile_orderType,
+menu_have REF MenuType,
+Crew VARCHAR(25),
+Pilotname VARCHAR(25),
+HDate DATE,
+Seat VARCHAR(25));
+
+CREATE TABLE Have OF HaveType(
+SCOPE FOR (flight_have) IS Flights_Type,
+SCOPE FOR (pass_have) IS PassengersType,
+SCOPE FOR (mile_have) IS Mile_orderType,
+SCOPE FOR (menu_have) IS MenuType);
+
+
+---------------------------------------------------------------------------------
+
+/* List the airline name that passenger John Wood has taken on the 4/4/2012*/
+SELECT h.pass_have.name
+FROM have h
+WHERE h.Odate = '4/4/2012'
+AND h.pass_have.name= 'John Wood';
+
+/* List all the descritpion of the Mile Program of passengers living in London*/
+SELECT mp.Description
+FROM Mile_program mp
+WHERE mp.mile_pass.Address LIKE %London%;
+
+
+
+
